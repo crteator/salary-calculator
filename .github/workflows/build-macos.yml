@@ -1,1 +1,40 @@
+# .github/workflows/build-macos.yml
+name: Build macOS App
 
+# 触发条件：允许你从网页端手动启动
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    # 1. 指定运行环境为 macOS[reference:1]
+    runs-on: macos-latest
+
+    steps:
+      # 2. 拉取你的代码[reference:2]
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 3. 设置 Python 环境[reference:3]
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 4. 安装依赖库
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install ttkbootstrap pyinstaller
+
+      # 5. 执行 PyInstaller 打包命令[reference:4]
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --onefile --windowed --name=薪酬计算系统 --hidden-import=ttkbootstrap salary_calculator.py
+
+      # 6. 上传生成好的成品[reference:5]
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Salary-Calculator-macOS
+          path: dist/薪酬计算系统
